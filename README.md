@@ -124,7 +124,7 @@ Send and receive Winlink email over 2m packet, through a [Digirig](https://digir
    Use `nv4fm` for the other gateway, or `telnet` to go over the internet.
 5. Compose with `pat --config pat/config.json compose`, or in the web UI from `pat --config pat/config.json http` (its forms include ICS-213), then connect again to send.
 
-The Pat steps follow Pat 1.0.0's source and haven't been run end to end yet.
+Pat 1.0.0 loads this config as-is, and the password comes from `PAT_SECURELOGINPASSWORD`. The on-air connect (Pat to Dire Wolf to a gateway) hasn't been tested yet.
 
 ### Levels
 
