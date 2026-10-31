@@ -1,0 +1,394 @@
+{
+  "Advanced Settings": {
+    "allrange": {
+      "label": "Range Override Parameter",
+      "value": "Default"
+    },
+    "almod": {
+      "label": "Alarm Mode",
+      "value": "Site"
+    },
+    "autolk": {
+      "label": "Automatic Key Lock",
+      "value": true
+    },
+    "bcl": {
+      "label": "Busy Channel Lockout",
+      "value": false
+    },
+    "fmradio": {
+      "label": "Broadcast FM Radio",
+      "value": true
+    },
+    "menu": {
+      "label": "All Menus",
+      "value": true
+    },
+    "reset": {
+      "label": "RESET Menu",
+      "value": true
+    },
+    "rpste": {
+      "label": "Squelch Tail Eliminate (repeater)",
+      "value": "5"
+    },
+    "rptrl": {
+      "label": "STE Repeater Delay",
+      "value": "OFF"
+    },
+    "screv": {
+      "label": "Scan Resume",
+      "value": "CO"
+    },
+    "ste": {
+      "label": "Squelch Tail Eliminate (HT to HT)",
+      "value": true
+    },
+    "tdr": {
+      "label": "Dual Watch",
+      "value": true
+    },
+    "tdrab": {
+      "label": "Dual Watch TX Priority",
+      "value": "Off"
+    },
+    "voice": {
+      "label": "Voice",
+      "value": "English"
+    },
+    "vox": {
+      "label": "VOX Sensitivity",
+      "value": "OFF"
+    }
+  },
+  "Basic Settings": {
+    "abr": {
+      "label": "Backlight Timeout",
+      "value": 5
+    },
+    "beep": {
+      "label": "Beep",
+      "value": true
+    },
+    "mdfa": {
+      "label": "Display Mode (A)",
+      "value": "Name"
+    },
+    "mdfb": {
+      "label": "Display Mode (B)",
+      "value": "Frequency"
+    },
+    "roger": {
+      "label": "Roger Beep",
+      "value": false
+    },
+    "rxled": {
+      "label": "RX LED Color",
+      "value": "Blue"
+    },
+    "save": {
+      "label": "Battery Saver",
+      "value": "1:3"
+    },
+    "squelch": {
+      "label": "Carrier Squelch Level",
+      "value": 4
+    },
+    "timeout": {
+      "label": "Timeout Timer",
+      "value": "60 sec"
+    },
+    "txled": {
+      "label": "TX LED Color",
+      "value": "Orange"
+    },
+    "wtled": {
+      "label": "Standby LED Color",
+      "value": "Purple"
+    }
+  },
+  "DTMF Settings": {
+    "ani.alarmcode": {
+      "label": "Alarm Code",
+      "value": "119"
+    },
+    "ani.aniid": {
+      "label": "ANI ID",
+      "value": "Off"
+    },
+    "ani.code": {
+      "label": "ANI Code",
+      "value": "80808"
+    },
+    "ani.dtmfoff": {
+      "label": "DTMF Speed (off)",
+      "value": "80 ms"
+    },
+    "ani.dtmfon": {
+      "label": "DTMF Speed (on)",
+      "value": "80 ms"
+    },
+    "dtmfst": {
+      "label": "DTMF Sidetone",
+      "value": "DT+ANI"
+    },
+    "pttid/0.code": {
+      "label": "PTT ID Code 1",
+      "value": "20202"
+    },
+    "pttid/1.code": {
+      "label": "PTT ID Code 2",
+      "value": ""
+    },
+    "pttid/10.code": {
+      "label": "PTT ID Code 11",
+      "value": ""
+    },
+    "pttid/11.code": {
+      "label": "PTT ID Code 12",
+      "value": ""
+    },
+    "pttid/12.code": {
+      "label": "PTT ID Code 13",
+      "value": ""
+    },
+    "pttid/13.code": {
+      "label": "PTT ID Code 14",
+      "value": ""
+    },
+    "pttid/14.code": {
+      "label": "PTT ID Code 15",
+      "value": "30303"
+    },
+    "pttid/2.code": {
+      "label": "PTT ID Code 3",
+      "value": ""
+    },
+    "pttid/3.code": {
+      "label": "PTT ID Code 4",
+      "value": ""
+    },
+    "pttid/4.code": {
+      "label": "PTT ID Code 5",
+      "value": ""
+    },
+    "pttid/5.code": {
+      "label": "PTT ID Code 6",
+      "value": ""
+    },
+    "pttid/6.code": {
+      "label": "PTT ID Code 7",
+      "value": ""
+    },
+    "pttid/7.code": {
+      "label": "PTT ID Code 8",
+      "value": ""
+    },
+    "pttid/8.code": {
+      "label": "PTT ID Code 9",
+      "value": ""
+    },
+    "pttid/9.code": {
+      "label": "PTT ID Code 10",
+      "value": ""
+    },
+    "pttlt": {
+      "label": "PTT ID Delay",
+      "value": 5
+    }
+  },
+  "Other Settings": {
+    "limits_new.uhf.enable": {
+      "label": "UHF TX Enabled",
+      "value": true
+    },
+    "limits_new.uhf.lower": {
+      "label": "UHF Lower Limit (MHz)",
+      "value": 400
+    },
+    "limits_new.uhf.upper": {
+      "label": "UHF Upper Limit (MHz)",
+      "value": 520
+    },
+    "limits_new.vhf.enable": {
+      "label": "VHF TX Enabled",
+      "value": true
+    },
+    "limits_new.vhf.lower": {
+      "label": "VHF Lower Limit (MHz)",
+      "value": 136
+    },
+    "limits_new.vhf.upper": {
+      "label": "VHF Upper Limit (MHz)",
+      "value": 174
+    },
+    "ponmsg": {
+      "label": "Power-On Message",
+      "value": "Message"
+    },
+    "poweron_msg.line1": {
+      "label": "Power-On Message 1",
+      "value": "KO6EYB"
+    },
+    "poweron_msg.line2": {
+      "label": "Power-On Message 2",
+      "value": ""
+    }
+  },
+  "Service Settings": {
+    "squelch_new.uhf.sql0": {
+      "label": "UHF Squelch 0",
+      "value": 0
+    },
+    "squelch_new.uhf.sql1": {
+      "label": "UHF Squelch 1",
+      "value": 20
+    },
+    "squelch_new.uhf.sql2": {
+      "label": "UHF Squelch 2",
+      "value": 21
+    },
+    "squelch_new.uhf.sql3": {
+      "label": "UHF Squelch 3",
+      "value": 22
+    },
+    "squelch_new.uhf.sql4": {
+      "label": "UHF Squelch 4",
+      "value": 23
+    },
+    "squelch_new.uhf.sql5": {
+      "label": "UHF Squelch 5",
+      "value": 24
+    },
+    "squelch_new.uhf.sql6": {
+      "label": "UHF Squelch 6",
+      "value": 25
+    },
+    "squelch_new.uhf.sql7": {
+      "label": "UHF Squelch 7",
+      "value": 26
+    },
+    "squelch_new.uhf.sql8": {
+      "label": "UHF Squelch 8",
+      "value": 27
+    },
+    "squelch_new.uhf.sql9": {
+      "label": "UHF Squelch 9",
+      "value": 28
+    },
+    "squelch_new.vhf.sql0": {
+      "label": "VHF Squelch 0",
+      "value": 0
+    },
+    "squelch_new.vhf.sql1": {
+      "label": "VHF Squelch 1",
+      "value": 22
+    },
+    "squelch_new.vhf.sql2": {
+      "label": "VHF Squelch 2",
+      "value": 23
+    },
+    "squelch_new.vhf.sql3": {
+      "label": "VHF Squelch 3",
+      "value": 24
+    },
+    "squelch_new.vhf.sql4": {
+      "label": "VHF Squelch 4",
+      "value": 25
+    },
+    "squelch_new.vhf.sql5": {
+      "label": "VHF Squelch 5",
+      "value": 26
+    },
+    "squelch_new.vhf.sql6": {
+      "label": "VHF Squelch 6",
+      "value": 27
+    },
+    "squelch_new.vhf.sql7": {
+      "label": "VHF Squelch 7",
+      "value": 28
+    },
+    "squelch_new.vhf.sql8": {
+      "label": "VHF Squelch 8",
+      "value": 29
+    },
+    "squelch_new.vhf.sql9": {
+      "label": "VHF Squelch 9",
+      "value": 30
+    }
+  },
+  "Work Mode Settings": {
+    "displayab": {
+      "label": "Display",
+      "value": "A"
+    },
+    "vfoa.freq": {
+      "label": "VFO A Frequency",
+      "value": "162.550000"
+    },
+    "vfoa.offset": {
+      "label": "VFO A Offset (0.0-999.999)",
+      "value": "0.000000"
+    },
+    "vfoa.scode": {
+      "label": "VFO A PTT-ID",
+      "value": "1"
+    },
+    "vfoa.sftd": {
+      "label": "VFO A Shift",
+      "value": "Off"
+    },
+    "vfoa.step": {
+      "label": "VFO A Tuning Step",
+      "value": "5.0"
+    },
+    "vfoa.txpower": {
+      "label": "VFO A Power",
+      "value": "High"
+    },
+    "vfoa.widenarr": {
+      "label": "VFO A Bandwidth",
+      "value": "Wide"
+    },
+    "vfob.freq": {
+      "label": "VFO B Frequency",
+      "value": "138.000000"
+    },
+    "vfob.offset": {
+      "label": "VFO B Offset (0.0-999.999)",
+      "value": "0.000000"
+    },
+    "vfob.scode": {
+      "label": "VFO B PTT-ID",
+      "value": "1"
+    },
+    "vfob.sftd": {
+      "label": "VFO B Shift",
+      "value": "Off"
+    },
+    "vfob.step": {
+      "label": "VFO B Tuning Step",
+      "value": "5.0"
+    },
+    "vfob.txpower": {
+      "label": "VFO B Power",
+      "value": "High"
+    },
+    "vfob.widenarr": {
+      "label": "VFO B Bandwidth",
+      "value": "Wide"
+    },
+    "wmchannel.mrcha": {
+      "label": "MR A Channel",
+      "value": 1
+    },
+    "wmchannel.mrchb": {
+      "label": "MR B Channel",
+      "value": 97
+    },
+    "workmode": {
+      "label": "VFO/MR Mode",
+      "value": "Channel"
+    }
+  }
+}

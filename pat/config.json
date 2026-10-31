@@ -1,0 +1,22 @@
+{
+  "mycall": "KO6EYB",
+  "secure_login_password": "",
+  "locator": "",
+  "connect_aliases": {
+    "km4dc": "ax25+agwpe:///KM4DC-10",
+    "nv4fm": "ax25+agwpe:///NV4FM-10",
+    "telnet": "telnet://{mycall}:CMSTelnet@cms.winlink.org:8772/wl2k"
+  },
+  "ax25": {
+    "engine": "agwpe",
+    "beacon": {
+      "every": 0,
+      "message": "",
+      "destination": "IDENT"
+    }
+  },
+  "agwpe": {
+    "addr": "localhost:8000",
+    "radio_port": 0
+  }
+}
