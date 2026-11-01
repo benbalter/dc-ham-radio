@@ -19,7 +19,8 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.15"
-      - uses: astral-sh/setup-uv@v10
+      # Not astral-sh/setup-uv: it stopped publishing floating major tags after v7.
+      - run: python -m pip install uv
       - run: uvx ruff check .
       # Radio tests need uv, CHIRP, and a backup image of a real radio, so they skip here.
       - run: python -m unittest discover tests -v
