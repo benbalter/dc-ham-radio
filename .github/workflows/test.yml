@@ -17,6 +17,6 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-python@v7
         with:
-          python-version: "3.13"
+          python-version: "3.15"
       # Radio tests need uv, CHIRP, and a backup image of a real radio, so they skip here.
       - run: python -m unittest discover tests -v
