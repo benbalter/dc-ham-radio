@@ -10,6 +10,7 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+# One job, since GitHub bills each job rounded up to a whole minute.
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -18,5 +19,11 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.15"
+      - uses: astral-sh/setup-uv@v10
+      - run: uvx ruff check .
       # Radio tests need uv, CHIRP, and a backup image of a real radio, so they skip here.
       - run: python -m unittest discover tests -v
+      # Installs CHIRP from GitHub and imports it, so a CHIRP change that breaks
+      # program.py shows up here instead of with the radio plugged in.
+      - name: program.py loads CHIRP
+        run: uv run scripts/program.py --help

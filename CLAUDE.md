@@ -19,12 +19,16 @@ This repo programs a Baofeng UV-5R used in Washington, DC. It's public. [`README
 | [`pat/config.json`](pat/config.json), [`pat/winlink.env`](pat/winlink.env) | [Pat](https://getpat.io) Winlink config with gateway aliases `km4dc` and `nv4fm`. The password comes from 1Password through `op run --env-file=pat/winlink.env`. `secure_login_password` must stay empty; a test checks it. |
 | [`scripts/digirig.py`](scripts/digirig.py) | Finds the Digirig's sound card and serial port, writes `out/direwolf.conf`, and starts Dire Wolf. `--check` only reports. Standard library only. |
 | [`tests/test_digital.py`](tests/test_digital.py) | Checks the Dire Wolf and Pat configs: call sign, RTS PTT, no beacons, no stored password, and that each Pat gateway alias is a Winlink row in the CSV. No hardware. |
+| [`tests/test_privacy.py`](tests/test_privacy.py) | Fails on personal details in tracked files: coordinates other than `CENTER`, grid squares, street addresses, DC neighborhoods (outside the CSV), IP/MAC addresses, local paths, real serial port names, and emails. Also checks that Pat sends no locator and that no radio image or card is tracked. If it flags something that's truly public, add it to that check's allowlist with a comment saying why. |
+| [`ruff.toml`](ruff.toml) | Lint rules for `ruff check`, listed explicitly so a new ruff release can't change what CI fails on. |
+| [`.github/workflows/test.yml`](.github/workflows/test.yml) | CI in one job: `ruff check`, the unit tests, and `uv run scripts/program.py --help`, which installs CHIRP from GitHub so a CHIRP change that breaks the import shows up there. |
 | `out/`, `backups/` | Generated card and radio images. Both are gitignored. Never commit them. |
 
 ## Commands
 
 ```sh
 python3 -m unittest discover tests     # run after every change to the CSV or scripts
+uvx ruff check .                       # lint the scripts and tests
 python3 scripts/card.py                # regenerate the card
 uv run scripts/program.py              # reads the radio, saves a backup, and previews changes; writes nothing
 uv run scripts/program.py --write      # writes channels and settings to the radio
@@ -94,4 +98,4 @@ Then run the tests, update the README's pull date and channel ranges, reprint th
 
 ## Privacy
 
-This repo is public. The only personal details allowed are the city (Washington, DC) and the owner's call sign in `radio-settings.json`. Never add a neighborhood, street, home coordinates, or anything derived from them (`CENTER` is downtown DC on purpose, and channel order follows from it), household or family details, gear the owner has at home, schedules, or which nets the owner personally joins. Before committing, `git grep` the diff for anything more specific than "Washington, DC".
+This repo is public. The only personal details allowed are the city (Washington, DC) and the owner's call sign, which `radio-settings.json`, the Dire Wolf and Pat configs, and `test_digital.py` need. Naming the gear this repo programs (the UV-5R, the Digirig, a Mac) is fine. Never add a neighborhood, street, home coordinates, or anything derived from them (`CENTER` is downtown DC on purpose, and channel order follows from it), household or family details, other gear the owner has at home, schedules, or which nets the owner personally joins. `test_privacy.py` catches the pattern-shaped leaks, but not things like schedules or nets, so before committing, also read the diff for anything more specific than "Washington, DC".

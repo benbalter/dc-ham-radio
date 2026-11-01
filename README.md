@@ -165,6 +165,9 @@ Then run the tests, check the channel map above, reprint the card, and reprogram
 - `refresh.py` parses RepeaterBook's table and applies its filters (a synthetic page, no network).
 - The Dire Wolf and Pat configs use the right call sign and RTS PTT, never beacon, store no password, and point only at Winlink channels in the CSV.
 - With uv and a backup image in `backups/`, `program.py` converts the CSV and settings for the radio, detects a setting change, and rejects an unknown setting. These skip otherwise, including in CI.
+- Tracked files hold no personal details that pattern matching can find: coordinates, grid squares, street addresses, neighborhoods, network addresses, local paths, serial port names, or emails. Pat sends no locator, and no radio image is committed.
+
+CI ([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs these tests, `uvx ruff check .`, and `uv run scripts/program.py --help`, which installs CHIRP from GitHub and catches a CHIRP change that breaks `program.py` before you plug in the radio.
 
 ## Sources
 

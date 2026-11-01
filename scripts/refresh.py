@@ -18,14 +18,13 @@ import argparse
 import csv
 import datetime
 import html
-import math
 import pathlib
 import re
 import sys
 import urllib.request
 
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
-import card  # noqa: E402  (shares the block-splitting logic)
+import card  # shares the block-splitting logic
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 CSV_PATH = ROOT / "frequencies.csv"
