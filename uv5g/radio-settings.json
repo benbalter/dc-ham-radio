@@ -17,6 +17,16 @@
       "value": false
     }
   },
+  "Other Settings": {
+    "poweron_msg.line1": {
+      "label": "Power-On Message 1",
+      "value": "WRYU909"
+    },
+    "poweron_msg.line2": {
+      "label": "Power-On Message 2",
+      "value": "GMRS"
+    }
+  },
   "Work Mode Settings": {
     "keylock": {
       "label": "Keypad Lock",

@@ -122,7 +122,7 @@ Settings are the UV-5R's [`radio-settings.json`](radio-settings.json) plus the f
 - **It's hard to change by accident.** Most menus and the keypad factory reset are hidden, so settings changes go through this repo. Busy Channel Lockout stops it from transmitting while someone else is talking.
 - **Family channel GMRS 19, backup GMRS 3.** If 19 is busy, switch to 3. They're marked `FAM` and `BAK` at the top of the sticker. 3 is one of GMRS 1–7, which are never repeater outputs; 1 is skipped because FRS walkie-talkies default to it.
 - **It starts on GMRS 19 (A), the family channel, and watches GMRS 20 (B).** A is the line you talk on at power-on. GMRS 19 has no repeater output nearby, unlike most of 15–22 (GMRS 20 is also the Seven Corners repeater's output). B listens to GMRS 20, the common travel and emergency calling channel.
-- **Power-on message:** it would otherwise inherit the UV-5R's ham call sign, so set `poweron_msg.line1` in `uv5g/radio-settings.json` to your GMRS call sign, the one to give when identifying.
+- **It shows the GMRS call sign at power-on**, the one to give when identifying, instead of the UV-5R's ham call sign.
 
 On the air:
 - **Identify** with your GMRS call sign at the end of a transmission or series, and at least every 15 minutes during a long one ([95.1751](https://www.ecfr.gov/current/title-47/part-95/section-95.1751)).
