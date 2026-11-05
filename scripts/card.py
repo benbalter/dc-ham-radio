@@ -1,6 +1,7 @@
 """Render frequencies.csv as a printable UV-5R battery sticker and a full channel sheet.
 
 Usage: python3 scripts/card.py [-o out/card.html]
+       python3 scripts/card.py --radio uv5g   # the UV-5G's card, in out/uv5g-card.html
 
 Print at 100% scale (no "fit to page"), cut out the sticker, and cover it with
 clear packing tape. Everything comes from the CSV, so rerun this after any
@@ -31,7 +32,20 @@ STICKER = [
     ("KV3B RO", "146.955"),
     ("SKYWARN", "147.300"),
     ("KM4DC", "145.065"),
+    ("GMRS 19", "462.650"),
     ("GMRS 20", "462.675"),
+]
+
+# The UV-5G's sticker: the family channel and its backup first (uv5g.FAMILY,
+# uv5g.BACKUP), then GMRS 20 and weather, then the other high-power GMRS
+# channels. 8-14 are on the sheet; they're low power and narrowband, so
+# they're rarely the pick.
+STICKER_UV5G = [("GMRS 19", "462.650"), ("GMRS 3", "462.6125"), ("GMRS 20", "462.675"), ("WX1", "162.550")] + [
+    (f"GMRS {n}", f) for n, f in [
+        (1, "462.5625"), (2, "462.5875"), (4, "462.6375"), (5, "462.6625"),
+        (6, "462.6875"), (7, "462.7125"), (15, "462.550"), (16, "462.575"),
+        (17, "462.600"), (18, "462.625"), (21, "462.700"), (22, "462.725"),
+    ]
 ]
 
 
@@ -47,6 +61,10 @@ def mhz(row):
 
 
 def shift(row):
+    if "backup family channel" in row["Comment"]:
+        return "BAK"
+    if "family channel" in row["Comment"]:
+        return "FAM"
     if row["Duplex"] == "off":
         return "RX"
     if row["Duplex"] in ("+", "-"):
@@ -70,7 +88,7 @@ def find(rows, name, freq):
     for r in rows:
         if r["Name"] == name and float(r["Frequency"]) == float(freq):
             return r
-    raise SystemExit(f"Sticker channel {name} {freq} isn't in frequencies.csv")
+    raise SystemExit(f"Sticker channel {name} {freq} isn't in the channel list")
 
 
 def blocks(rows):
@@ -87,6 +105,18 @@ def blocks(rows):
         ("Repeaters, nearest first", rows[first_rep:first_wx]),
         ("NOAA Weather Radio", rows[first_wx:last_wx + 1]),
         ("Emergency and monitor", rows[last_wx + 1:]),
+    ]
+
+
+def blocks_uv5g(rows):
+    """Split the UV-5G's rows by what they're for (see scripts/uv5g.py)."""
+    def pick(test):
+        return [r for r in rows if test(r)]
+    return [
+        ("GMRS/FRS", pick(lambda r: r["Name"].startswith("GMRS "))),
+        ("GMRS repeaters", pick(lambda r: r["Duplex"] == "+")),
+        ("NOAA Weather Radio", pick(lambda r: r["Name"].startswith("WX"))),
+        ("Ham, receive only", pick(lambda r: r["Comment"].startswith("Ham, RX only"))),
     ]
 
 
@@ -126,34 +156,52 @@ KEY = (
     "S simplex &middot; &plusmn; offset MHz &middot; T tone squelch &middot; "
     "RX receive only &middot; EMG transmit only in a life-threatening emergency"
 )
+KEY_UV5G = (
+    "FAM family channel &middot; BAK backup if FAM is busy &middot; S simplex &middot; "
+    "+ repeater &middot; T tone squelch &middot; RX receive only"
+)
+
+# What each radio's card shows: title, sticker channels, sheet blocks, and key.
+CARDS = {
+    "uv5r": ("UV-5R", STICKER, blocks, KEY),
+    "uv5g": ("UV-5G", STICKER_UV5G, blocks_uv5g, KEY_UV5G),
+}
 
 
-def render(rows):
-    sticker = "".join(tr(find(rows, n, f)) for n, f in STICKER)
+def render(rows, radio="uv5r"):
+    model, stickers, split, key = CARDS[radio]
+    sticker = "".join(tr(find(rows, n, f)) for n, f in stickers)
     sheet = "".join(
         f"<h2>{html.escape(title)}</h2><table>{''.join(tr(r, True) for r in group)}</table>"
-        for title, group in blocks(rows)
+        for title, group in split(rows)
         if group
     )
     return f"""<!doctype html>
-<html lang="en"><head><meta charset="utf-8"><title>UV-5R channel card</title>
+<html lang="en"><head><meta charset="utf-8"><title>{model} channel card</title>
 <style>{CSS % {"w": STICKER_WIDTH_IN, "h": STICKER_HEIGHT_IN}}</style></head>
 <body>
 <p class="hint">Print at 100% scale. Check the sticker measures {STICKER_WIDTH_IN} &times; {STICKER_HEIGHT_IN} in before cutting.</p>
-<div class="sticker"><h1>UV-5R &middot; Washington DC</h1><table>{sticker}</table><div class="key">{KEY}</div></div>
-<div class="sheet"><h1>UV-5R channels &middot; Washington, DC</h1><div>{KEY}</div>{sheet}</div>
+<div class="sticker"><h1>{model} &middot; Washington DC</h1><table>{sticker}</table><div class="key">{key}</div></div>
+<div class="sheet"><h1>{model} channels &middot; Washington, DC</h1><div>{key}</div>{sheet}</div>
 </body></html>
 """
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("-o", "--output", default=str(ROOT / "out" / "card.html"))
-    parser.add_argument("-i", "--input", default=str(ROOT / "frequencies.csv"))
+    parser.add_argument("--radio", choices=sorted(CARDS), default="uv5r", help="which radio (default: uv5r)")
+    parser.add_argument("-o", "--output", help="default: out/card.html, or out/uv5g-card.html")
+    parser.add_argument("-i", "--input", help="channel list (default: the radio's own)")
     args = parser.parse_args()
-    out = pathlib.Path(args.output)
+    if args.radio == "uv5g":
+        import uv5g  # builds out/uv5g.csv from frequencies.csv
+
+        default_in, default_out = uv5g.build(), "uv5g-card.html"
+    else:
+        default_in, default_out = ROOT / "frequencies.csv", "card.html"
+    out = pathlib.Path(args.output or ROOT / "out" / default_out)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(render(load(args.input)), encoding="utf-8")
+    out.write_text(render(load(args.input or default_in), args.radio), encoding="utf-8")
     print(out)
 
 

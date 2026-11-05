@@ -1,0 +1,10 @@
+Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPolarity,RxDtcsCode,CrossMode,Mode,TStep,Skip,Power,Comment,URCALL,RPT1CALL,RPT2CALL,DVCODE
+0,CLARNDN,462.575000,+,5.000000,TSQL,141.3,141.3,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Arlington VA, Clarendon; KAD6329; open; RepeaterBook 51-1035, updated 2023-11-02",,,,
+1,ANACOST,462.700000,+,5.000000,TSQL,141.3,141.3,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Washington DC, Anacostia; KAB7046; open; RepeaterBook 11-2273, updated 2026-09-01",,,,
+2,FT WARD,462.625000,+,5.000000,TSQL,123.0,123.0,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Alexandria VA, Fort Ward Park; WPON592; open; RepeaterBook 51-1036, updated 2026-09-01",,,,
+3,7CORN67,462.675000,+,5.000000,TSQL,141.3,141.3,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Falls Church VA, Seven Corners; KAD6329; open; RepeaterBook 51-1032, updated 2023-10-31",,,,
+4,7CORN55,462.550000,+,5.000000,TSQL,141.3,141.3,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Falls Church VA, Seven Corners; WPON592; open; RepeaterBook 51-1034, updated 2023-11-01",,,,
+5,CAP HTS,462.575000,+,5.000000,TSQL,241.8,241.8,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Capitol Heights MD; WREZ274; open; RepeaterBook 24-1124, updated 2024-01-19",,,,
+6,WESTEND,462.600000,+,5.000000,TSQL,141.3,141.3,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Alexandria VA, West End; KAB7046; open; RepeaterBook 51-529, updated 2026-09-01",,,,
+7,WHEATON,462.625000,+,5.000000,TSQL,156.7,156.7,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Wheaton MD; WPON592; open; RepeaterBook 24-1043, updated 2026-09-01",,,,
+8,MT VERN,462.575000,+,5.000000,TSQL,136.5,136.5,023,NN,023,Tone->Tone,FM,5.00,,4.0W,"Alexandria VA, Mount Vernon; WRDF311; open; RepeaterBook 51-865, updated 2023-05-29",,,,

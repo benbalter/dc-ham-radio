@@ -1,2 +1,3 @@
 # CHIRP needs CRLF line endings; keep git (and core.autocrlf) from converting them.
 frequencies.csv -text
+uv5g/repeaters.csv -text

@@ -45,6 +45,7 @@ Key channels:
 | 5 | `2M CALL` | 146.520 simplex. The first thing to try when repeaters are down. |
 | 34 | `KV3B RO` | Rockville, emergency power, SKYWARN-affiliated. |
 | 71 | `SKYWARN` | N3JLT Bluemont, NWS Sterling's SKYWARN net. About 45 miles out, so a handheld can usually listen but may not get in. |
+| 96 | `GMRS 19` | 462.650, the UV-5Gs' family channel. Line B watches it at power-on. Listen only; emergency-only transmit on this radio, like all GMRS here. |
 | 97 | `GMRS 20` | 462.675 with PL 141.3, a common travel/emergency channel. Emergency-only on this radio. |
 
 Repeaters are limited to 2m and 70cm because the UV-5R only receives 136–174 and 400–520 MHz, and those are the only ham bands in that range. The UV-5R is analog FM only, so digital-only repeaters (DMR, D-STAR, P-25, Fusion) are left out. Mixed analog/digital repeaters are included, with the other modes named in the comment. On 4 W with the stock antenna, expect anything past about 15 miles to be unreliable.
@@ -58,7 +59,7 @@ Repeaters are limited to 2m and 70cm because the UV-5R only receives 136–174 a
 - **What's programmed:** GMRS/FRS 1–22 (channels 78–99) can transmit and are marked `EMG` on the printed card. Every one has a comment saying it's emergency-only, and the tests fail if one doesn't. GMRS 20 and 16 send PL 141.3.
 - **If you have to use them:**
   - Use the lowest power that works. They're programmed at high power (4 W) so a call can get through; on most UV-5R firmware a short press of `#` switches to low (1 W).
-  - FRS/GMRS 8–14 are normally capped at 0.5 W ([95.1767](https://www.ecfr.gov/current/title-47/part-95/section-95.1767)), so reach for GMRS 20 or 16 first.
+  - FRS/GMRS 8–14 are normally capped at 0.5 W ([95.1767](https://www.ecfr.gov/current/title-47/part-95/section-95.1767)), so reach for GMRS 19 (where the family radios sit), 20, or 16 first.
   - Identify with your ham call sign, since you're operating as an amateur station, and your GMRS call sign too if you have one.
   - Keep it short, and log what you sent, when, and why.
 - **Avoid keying up by accident.** Check the display before you press PTT, especially after a scan stops, since scans can stop on these channels. With dual watch on, PTT can transmit on whichever display line is active.
@@ -79,7 +80,7 @@ What to know:
 - **Settings:** `--write` also applies [`radio-settings.json`](radio-settings.json). To change a setting, edit the file, or change it on the keypad and run `uv run scripts/program.py --save-settings` to pull it into the repo, then commit. Settings the file doesn't list are left alone. An unknown key or invalid value stops the script before it writes anything.
 - **No radio handy:** `--image backups/X.img` previews against a saved image instead.
 - **Options:** `--port /dev/cu.usbserial-XXXX` if more than one USB serial device is plugged in; `--csv` and `--settings` to use other files.
-- **Connection failures:** the write step reconnects and retries the handshake up to 3 times on its own, and a failed handshake writes nothing. If the first read fails, or all 3 retries do, the radio is probably stuck in programming mode: turn it off and on, reseat the K1 plug, and run it again.
+- **Connection failures:** the read and the write each reconnect and retry the handshake up to 3 times on their own, and a failed handshake writes nothing. If all 3 tries fail, the radio is probably stuck in programming mode or the plug isn't seated: turn it off and on, reseat the K1 plug, and run it again.
 - **Restoring a backup:** open the `.img` file in CHIRP (**File → Open**), then **Radio → Upload to radio**. `backups/` is gitignored.
 
 ### With the CHIRP app
@@ -95,7 +96,38 @@ The CHIRP app doesn't read `radio-settings.json`; set those by hand or with `pro
 - **Alarm Mode is `Site`.** On the UV-5R, *Tone* and *Code* **transmit** an alarm on whatever channel is selected when the alarm button is held. *Site* only sounds the speaker. The tests require `Site`.
 - **Scan Resume is `CO`** (resume when the signal drops), so a scan follows whole exchanges. NOAA transmits nonstop, so the weather channels are skipped in scan; pick them by hand.
 - **Automatic Key Lock is on**, so a bump in a bag can't change channels. PTT still works; hold `#` to unlock.
-- **Startup:** channel mode, with line A on ch 1 and line B on ch 97, watched together with dual watch.
+- **Startup:** channel mode, with line A on ch 1 and line B on ch 96 (GMRS 19, the UV-5Gs' family channel), watched together with dual watch. B only listens; transmitting there from the UV-5R is still emergency-only.
+
+## UV-5G (GMRS)
+
+The [Radioddity UV-5G](https://radioddity.com) looks like a UV-5R and programs the same way, over the same K1 cable, but it's certified for GMRS and its firmware only transmits there. So on the UV-5G, GMRS is routine use under a GMRS license, not emergency-only as it is on the UV-5R.
+
+```sh
+uv run scripts/program.py --radio uv5g          # back up the UV-5G and preview; writes nothing
+uv run scripts/program.py --radio uv5g --write  # program it
+python3 scripts/card.py --radio uv5g            # its sticker and channel sheet, in out/uv5g-card.html
+```
+
+Its channels are built from `frequencies.csv` by [`scripts/uv5g.py`](scripts/uv5g.py), so a change to the UV-5R's list reaches the UV-5G on its next programming:
+
+| Slots | What |
+| --- | --- |
+| 0 | NOAA WX1, receive only |
+| 1–22 | GMRS/FRS 1–22, so the channel number on the display is the GMRS channel. 8–14 are narrowband at low power, as [95.1767](https://www.ecfr.gov/current/title-47/part-95/section-95.1767) requires. |
+| 23–31 | Open GMRS repeaters within about 15 miles, nearest first, from [`uv5g/repeaters.csv`](uv5g/repeaters.csv) (RepeaterBook, pulled 2026-11-04). They're tone squelched, so you only hear the repeater, not other traffic on its frequency. |
+| 32– | NOAA WX2–WX7, then receive-only ham channels: the primary repeaters, SKYWARN, and both calling frequencies |
+
+Settings are the UV-5R's [`radio-settings.json`](radio-settings.json) plus the few differences in [`uv5g/radio-settings.json`](uv5g/radio-settings.json):
+- **The keypad locks itself**, so stray presses don't change the channel. Hold `#` to unlock it.
+- **Both lines show channel names**, not frequencies.
+- **It's hard to change by accident.** Most menus and the keypad factory reset are hidden, so settings changes go through this repo. Busy Channel Lockout stops it from transmitting while someone else is talking.
+- **Family channel GMRS 19, backup GMRS 3.** If 19 is busy, switch to 3. They're marked `FAM` and `BAK` at the top of the sticker. 3 is one of GMRS 1–7, which are never repeater outputs; 1 is skipped because FRS walkie-talkies default to it.
+- **It starts on GMRS 19 (A), the family channel, and watches GMRS 20 (B).** A is the line you talk on at power-on. GMRS 19 has no repeater output nearby, unlike most of 15–22 (GMRS 20 is also the Seven Corners repeater's output). B listens to GMRS 20, the common travel and emergency calling channel.
+- **It shows the GMRS call sign at power-on**, the one to give when identifying, instead of the UV-5R's ham call sign.
+
+On the air:
+- **Identify** with your GMRS call sign at the end of a transmission or series, and at least every 15 minutes during a long one ([95.1751](https://www.ecfr.gov/current/title-47/part-95/section-95.1751)).
+- **Repeaters:** the ones listed are open, meaning no permission needed. Several were last confirmed in 2023, so if one never answers, check its RepeaterBook ID from the channel sheet. Many other GMRS repeaters want you to request access from the owner on [myGMRS](https://mygmrs.com/repeaters) first. Add one to `uv5g/repeaters.csv` only after checking its listing for the tone and the owner's rules.
 
 ## Winlink over packet
 
@@ -164,7 +196,8 @@ Then run the tests, check the channel map above, reprint the card, and reprogram
 - `radio-settings.json` is in canonical format, its band limits cover the channel list, and Alarm Mode is `Site`.
 - `refresh.py` parses RepeaterBook's table and applies its filters (a synthetic page, no network).
 - The Dire Wolf and Pat configs use the right call sign and RTS PTT, never beacon, store no password, and point only at Winlink channels in the CSV.
-- With uv and a backup image in `backups/`, `program.py` converts the CSV and settings for the radio, detects a setting change, and rejects an unknown setting. These skip otherwise, including in CI.
+- The UV-5G's built list transmits only on GMRS (simplex, or a repeater 5 MHz up), keeps 8–14 narrowband and low power, puts GMRS 1–22 in slots 1–22, keeps the family channels simplex and off repeater outputs, never uses the emergency-only wording, and has every sticker channel. Its merged settings lock the keypad, limit the menus, start on the family channel, keep Alarm Mode at `Site`, and never carry over the UV-5R's TX limits.
+- With uv and a backup image in `backups/`, `program.py` converts the CSV and settings for the radio, detects a setting change, and rejects an unknown setting, and does the same conversion for the UV-5G (on a UV-5R image until a UV-5G one exists). These skip otherwise, including in CI.
 - Tracked files hold no personal details that pattern matching can find: coordinates, grid squares, street addresses, neighborhoods, network addresses, local paths, serial port names, or emails. Pat sends no locator, and no radio image is committed.
 
 CI ([`.github/workflows/test.yml`](.github/workflows/test.yml)) runs these tests, `uvx ruff check .`, and `uv run scripts/program.py --help`, which installs CHIRP from GitHub and catches a CHIRP change that breaks `program.py` before you plug in the radio.

@@ -2,13 +2,18 @@
 # requires-python = ">=3.10,<3.14"
 # dependencies = ["chirp @ git+https://github.com/kk7ds/chirp"]
 # ///
-"""Program the UV-5R from frequencies.csv and radio-settings.json over a serial cable (e.g. a Digirig's SERIAL jack).
+"""Program the UV-5R (or the UV-5G) from frequencies.csv and radio-settings.json over a serial cable (e.g. a Digirig's SERIAL jack).
 
 Usage:
   uv run scripts/program.py                  # back up the radio and show what would change
   uv run scripts/program.py --write          # back up, then write channels and settings to the radio
   uv run scripts/program.py --save-settings  # back up, then save the radio's settings to radio-settings.json
   uv run scripts/program.py --image X.img    # same, reading a saved image instead of the radio
+  uv run scripts/program.py --radio uv5g     # any of the above for the Radioddity UV-5G (GMRS)
+
+The UV-5G's channels are built from frequencies.csv by scripts/uv5g.py, and
+its settings are radio-settings.json with uv5g/radio-settings.json layered on
+top, so it follows the UV-5R's configuration except where the override says.
 
 Every radio read saves the image to backups/, so you can restore it in CHIRP
 (File > Open, then Radio > Upload). The radio ends up matching the CSV
@@ -31,10 +36,30 @@ from chirp import settings as chirp_settings
 from chirp.drivers import generic_csv
 
 import radio_settings
+import uv5g
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-MODEL = "Baofeng_UV-5R"
 SETTINGS_PATH = ROOT / "radio-settings.json"
+
+# Each radio: CHIRP model ID, where its channels come from, and its settings
+# files, base first. The last settings file is the radio's own: --settings
+# replaces it and --save-settings writes to it.
+RADIOS = {
+    "uv5r": {
+        "model": "Baofeng_UV-5R",
+        "csv": lambda: ROOT / "frequencies.csv",
+        "settings": [SETTINGS_PATH],
+        "not_inherited": (),
+    },
+    "uv5g": {
+        # Same protocol, memory layout, and settings as the UV-5R; CHIRP
+        # checks the radio's ident on download, so the wrong radio fails fast.
+        "model": "Radioddity_UV-5G",
+        "csv": uv5g.build,
+        "settings": [SETTINGS_PATH, uv5g.SETTINGS_PATH],
+        "not_inherited": uv5g.NOT_INHERITED,
+    },
+}
 
 
 def setting_value(element):
@@ -96,6 +121,12 @@ def find_port():
     return ports[0]
 
 
+def shown(path):
+    """A path relative to the repo when it's inside it, for messages."""
+    path = pathlib.Path(path).resolve()
+    return str(path.relative_to(ROOT)) if path.is_relative_to(ROOT) else str(path)
+
+
 def describe(mem):
     if mem is None or mem.empty:
         return "(empty)"
@@ -133,53 +164,83 @@ def planned_memories(radio, csv_path):
                 problems.append(f"slot {number} {mem.name}: {msg}")
         planned[number] = new
     if problems:
-        sys.exit("Can't convert frequencies.csv for this radio:\n  " + "\n  ".join(problems))
+        sys.exit(f"Can't convert {shown(csv_path)} for this radio:\n  " + "\n  ".join(problems))
     return planned
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--port", help="serial port (default: the only /dev/cu.usbserial-*)")
-    parser.add_argument("--csv", default=str(ROOT / "frequencies.csv"))
+    parser.add_argument("--radio", choices=sorted(RADIOS), default="uv5r", help="which radio (default: uv5r)")
+    parser.add_argument("--csv", help="channel list (default: the radio's own)")
     parser.add_argument("--write", action="store_true", help="write channels and settings to the radio")
     parser.add_argument(
         "--save-settings", action="store_true",
-        help=f"save the radio's current settings to {SETTINGS_PATH.name}",
+        help="save the radio's current settings to its settings file",
     )
     parser.add_argument("--image", help="read a saved .img instead of the radio (no writing)")
-    parser.add_argument("--settings", default=str(SETTINGS_PATH), help="settings JSON to use")
+    parser.add_argument("--settings", help="settings JSON to use in place of the radio's own")
     args = parser.parse_args()
     if args.image and args.write:
         parser.error("--write needs the radio, not --image")
+    profile = RADIOS[args.radio]
+    *base_settings, own_settings = profile["settings"]
+    args.settings = args.settings or str(own_settings)
+    args.csv = args.csv or str(profile["csv"]())
 
     directory.import_drivers()
+    cls = directory.get_radio(profile["model"])
     if args.image:
-        radio = directory.get_radio_by_image(args.image)
+        # Not get_radio_by_image: CHIRP can't tell a UV-5G image from a UV-5R one.
+        radio = cls(args.image)
         pipe = None
-        print(f"Read {args.image}")
+        print(f"Read {args.image} as {cls.VENDOR} {cls.MODEL}")
     else:
-        cls = directory.get_radio(MODEL)
         port = args.port or find_port()
         pipe = serial.Serial(port, baudrate=cls.BAUD_RATE, timeout=0.25)
         radio = cls(pipe)
         print(f"Reading radio on {port}...")
         radio.status_fn = lambda s: None
-        radio.sync_in()
+        # Radios can miss the first handshake after the port opens (the UV-5G
+        # did, and CHIRP then misreports it as a "blacklisted model"). Reading
+        # changes nothing on the radio, so retry like the write does.
+        for attempt in range(1, 4):
+            try:
+                radio.sync_in()
+                break
+            except errors.RadioError as e:
+                print(f"  read attempt {attempt}: {e}")
+                pipe.close()
+                time.sleep(3)
+                pipe.open()
+                pipe.reset_input_buffer()
+        else:
+            sys.exit("Couldn't read the radio. Power-cycle it, push the K1 plug in until it's fully seated, and rerun.")
         backups = ROOT / "backups"
         backups.mkdir(exist_ok=True)
         stamp = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
-        backup = backups / f"uv5r-{stamp}.img"
+        backup = backups / f"{args.radio}-{stamp}.img"
         radio.save_mmap(str(backup))
         print(f"Backed up to {backup}")
 
     current_settings = snapshot_settings(radio)
+    keep_own = profile["not_inherited"]
+    base = radio_settings.drop(radio_settings.merge(*map(radio_settings.load, base_settings)), keep_own)
     if args.save_settings:
-        radio_settings.dump(current_settings, args.settings)
-        print(f"Saved {sum(map(len, current_settings.values()))} settings to {args.settings}")
+        # An override file keeps only what differs from the settings under it,
+        # and never the radio's own TX limits or calibration.
+        saved = current_settings
+        if base_settings:
+            saved = radio_settings.drop(radio_settings.subtract(current_settings, base), keep_own)
+        radio_settings.dump(saved, args.settings)
+        print(f"Saved {sum(map(len, saved.values()))} settings to {args.settings}")
         return
 
-    settings_name = pathlib.Path(args.settings).name
-    desired_settings = radio_settings.load(args.settings)
+    settings_name = " + ".join(map(shown, [*base_settings, args.settings]))
+    own = radio_settings.load(args.settings)
+    if own and keep_own and radio_settings.drop(own, keep_own) != own:
+        sys.exit(f"{shown(args.settings)} sets a key this radio keeps for itself: {', '.join(keep_own)}")
+    desired_settings = None if own is None and not base else radio_settings.merge(base, own)
     setting_changes = []
     if desired_settings is None:
         print(f"No {settings_name}; settings are left alone. Run --save-settings to create it.")
@@ -207,7 +268,7 @@ def main():
             print(f"  {number:>3} {describe(old)}\n      -> {describe(new)}")
             radio.set_memory(new)
             changes += 1
-    print(f"{changes} slot(s) differ from {pathlib.Path(args.csv).name}.")
+    print(f"{changes} slot(s) differ from {shown(args.csv)}.")
 
     if not args.write:
         print("Dry run: nothing written. Rerun with --write to program the radio.")
