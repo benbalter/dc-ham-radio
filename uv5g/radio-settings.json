@@ -1,0 +1,34 @@
+{
+  "Advanced Settings": {
+    "autolk": {
+      "label": "Automatic Key Lock",
+      "value": true
+    },
+    "bcl": {
+      "label": "Busy Channel Lockout",
+      "value": true
+    },
+    "menu": {
+      "label": "All Menus",
+      "value": false
+    },
+    "reset": {
+      "label": "RESET Menu",
+      "value": false
+    }
+  },
+  "Work Mode Settings": {
+    "keylock": {
+      "label": "Keypad Lock",
+      "value": true
+    },
+    "wmchannel.mrcha": {
+      "label": "MR A Channel",
+      "value": 19
+    },
+    "wmchannel.mrchb": {
+      "label": "MR B Channel",
+      "value": 20
+    }
+  }
+}

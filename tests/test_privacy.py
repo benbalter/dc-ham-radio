@@ -43,7 +43,7 @@ NEIGHBORHOODS = re.compile(
     r"logan circle|mount pleasant|navy yard|noma|palisades|petworth|shaw|spring valley|"
     r"takoma|tenleytown|van ness|woodley park)\b"
 )
-NEIGHBORHOOD_EXEMPT = {"frequencies.csv"}
+NEIGHBORHOOD_EXEMPT = {"frequencies.csv", "uv5g/repeaters.csv"}
 
 
 def tracked_files():

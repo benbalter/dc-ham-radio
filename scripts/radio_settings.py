@@ -51,3 +51,44 @@ def diff(current, desired):
             changes.append((group, label, key, old, value))
     changes.sort()
     return [(key, label, old, new) for _, label, key, old, new in changes]
+
+
+def merge(*snapshots):
+    """Layer snapshots in order, so later ones win key by key.
+
+    A key keeps the group of the snapshot that set it last. None (a missing
+    file) is skipped, so an absent override file just means "no overrides".
+    """
+    merged = {}
+    for snapshot in snapshots:
+        for group, entries in (snapshot or {}).items():
+            for key, entry in entries.items():
+                for other in merged.values():
+                    other.pop(key, None)
+                merged.setdefault(group, {})[key] = dict(entry)
+    return {group: entries for group, entries in merged.items() if entries}
+
+
+def subtract(snapshot, base):
+    """The entries of snapshot whose value differs from base, or that base lacks.
+
+    Used to save an override file that lists only what differs from the
+    settings it's layered on.
+    """
+    have = flatten(base or {})
+    out = {}
+    for key, (group, label, value) in flatten(snapshot).items():
+        if key in have and normalize(have[key][2]) == normalize(value):
+            continue
+        out.setdefault(group, {})[key] = {"label": label, "value": value}
+    return out
+
+
+def drop(snapshot, prefixes):
+    """snapshot without the keys that start with any of prefixes."""
+    out = {}
+    for group, entries in (snapshot or {}).items():
+        kept = {k: e for k, e in entries.items() if not k.startswith(tuple(prefixes))}
+        if kept:
+            out[group] = kept
+    return out

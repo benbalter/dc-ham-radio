@@ -65,6 +65,34 @@ class RadioSettingsTest(unittest.TestCase):
         desired = {"Basic Settings": {"squelch": SAMPLE["Basic Settings"]["squelch"]}}
         self.assertEqual(radio_settings.diff(SAMPLE, desired), [])
 
+    def test_merge_layers_in_order(self):
+        override = {
+            "Basic Settings": {"squelch": {"label": "Carrier Squelch Level", "value": 2}},
+            "Work Mode Settings": {"keylock": {"label": "Keypad Lock", "value": True}},
+        }
+        merged = radio_settings.merge(SAMPLE, None, override)
+        flat = radio_settings.flatten(merged)
+        self.assertEqual(flat["squelch"][2], 2)
+        self.assertEqual(flat["beep"][2], True)
+        self.assertEqual(flat["keylock"], ("Work Mode Settings", "Keypad Lock", True))
+        self.assertEqual(SAMPLE["Basic Settings"]["squelch"]["value"], 5)  # inputs untouched
+
+    def test_subtract_keeps_only_differences(self):
+        current = copy.deepcopy(SAMPLE)
+        current["Basic Settings"]["squelch"]["value"] = 2
+        current["Work Mode Settings"] = {"keylock": {"label": "Keypad Lock", "value": True}}
+        self.assertEqual(
+            radio_settings.subtract(current, SAMPLE),
+            {
+                "Basic Settings": {"squelch": {"label": "Carrier Squelch Level", "value": 2}},
+                "Work Mode Settings": {"keylock": {"label": "Keypad Lock", "value": True}},
+            },
+        )
+
+    def test_drop_prefixes(self):
+        dropped = radio_settings.drop(SAMPLE, ("poweron_msg.", "beep"))
+        self.assertEqual(list(radio_settings.flatten(dropped)), ["squelch"])
+
     def test_load_missing_returns_none(self):
         self.assertIsNone(radio_settings.load(ROOT / "does-not-exist.json"))
 
@@ -110,9 +138,15 @@ class SettingsFileTest(unittest.TestCase):
         self.assertEqual(flat["almod"], "Site")
 
 
-def latest_image():
-    images = sorted((ROOT / "backups").glob("uv5r-*.img"))
+def latest_image(prefix="uv5r"):
+    images = sorted((ROOT / "backups").glob(f"{prefix}-*.img"))
     return images[-1] if images else None
+
+
+def uv5g_image():
+    # A UV-5R image stands in until the UV-5G has been read: same memory
+    # layout and settings code in CHIRP, so conversion problems still show up.
+    return latest_image("uv5g") or latest_image()
 
 
 @unittest.skipUnless(shutil.which("uv") and latest_image(), "needs uv and a radio image in backups/")
@@ -149,6 +183,23 @@ class ProgramTest(unittest.TestCase):
             result = self.run_program("--settings", str(path))
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("sqelch: not a setting on this radio", result.stdout + result.stderr)
+
+
+
+@unittest.skipUnless(shutil.which("uv") and uv5g_image(), "needs uv and a radio image in backups/")
+class UV5GProgramTest(unittest.TestCase):
+    def test_channels_and_settings_convert_for_the_radio(self):
+        result = subprocess.run(
+            ["uv", "run", "--quiet", str(ROOT / "scripts" / "program.py"),
+             "--radio", "uv5g", "--image", str(uv5g_image())],
+            capture_output=True, text=True, timeout=600,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn("as Radioddity UV-5G", result.stdout)
+        # The UV-5R's TX limits and calibration must never be applied to it.
+        self.assertNotIn("limits_new.", result.stdout)
+        self.assertNotIn("squelch_new.", result.stdout)
+        self.assertIn("Dry run: nothing written", result.stdout)
 
 
 if __name__ == "__main__":
