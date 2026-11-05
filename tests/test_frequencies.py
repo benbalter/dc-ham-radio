@@ -127,6 +127,15 @@ class FrequenciesTest(unittest.TestCase):
                 with self.subTest(slot=r["Location"], name=r["Name"]):
                     self.assertEqual(r["Skip"], "S")
 
+    def test_only_family_and_calling_gmrs_scanned(self):
+        # FRS radios and baby monitors keep the rest busy, and this radio only
+        # transmits on GMRS in an emergency, so scan just the channels that matter.
+        for r in self.rows:
+            if r["Name"].startswith("GMRS "):
+                with self.subTest(name=r["Name"]):
+                    want = "" if r["Name"] in ("GMRS 19", "GMRS 20") else "S"
+                    self.assertEqual(r["Skip"], want)
+
     def test_national_calling_present(self):
         simplex = {r["Frequency"] for r in self.rows if r["Duplex"] == ""}
         for freq in NATIONAL_CALLING:
