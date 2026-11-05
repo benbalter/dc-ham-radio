@@ -18,6 +18,7 @@ This repo programs a Baofeng UV-5R and a Radioddity UV-5G used in Washington, DC
 | [`uv5g/repeaters.csv`](uv5g/repeaters.csv) | GMRS repeaters for the UV-5G, edited by hand from [RepeaterBook's GMRS search](https://www.repeaterbook.com/gmrs/) (or [myGMRS](https://mygmrs.com/repeaters)): open, on-air, CTCSS, within about 15 miles of downtown DC, nearest first, `TSQL` on the listed tone. Each `Comment` cites the RepeaterBook ID and its last-update date. Add a permission-required repeater only after its owner approves. CHIRP's CSV format; `Location` is ignored. |
 | [`uv5g/radio-settings.json`](uv5g/radio-settings.json) | Only the UV-5G's differences from `radio-settings.json`: keypad lock, limited menus, no keypad reset, busy-channel lockout, and its startup channels. `program.py --radio uv5g` layers it on top, so the UV-5G follows the UV-5R's settings otherwise. `--save-settings --radio uv5g` writes only what differs. |
 | [`tests/test_uv5g.py`](tests/test_uv5g.py) | Checks the built UV-5G list (format, GMRS-only transmit, 8–14 narrow and low, slots equal GMRS channel numbers), its sticker, and its merged settings, including the keypad lock. |
+| [`scripts/gobag.py`](scripts/gobag.py) | Copies the newest image per radio, both cards, the channel lists, settings, and digital-mode configs to a USB stick for offline restores. Never copies `pat/winlink.env`. Standard library only; [`tests/test_gobag.py`](tests/test_gobag.py) checks it. |
 | [`tests/test_refresh.py`](tests/test_refresh.py) | Checks `refresh.py`'s parsing and filters against a synthetic page. No network. |
 | [`direwolf/direwolf.conf`](direwolf/direwolf.conf) | Dire Wolf (software modem) template for 1200-baud packet through the Digirig: RTS PTT, AGW on 8000, KISS off, no beacons. `scripts/digirig.py` fills in the sound card and serial port. |
 | [`pat/config.json`](pat/config.json), [`pat/winlink.env`](pat/winlink.env) | [Pat](https://getpat.io) Winlink config with gateway aliases `km4dc` and `nv4fm`. The password comes from 1Password through `op run --env-file=pat/winlink.env`. `secure_login_password` must stay empty; a test checks it. |
@@ -76,7 +77,7 @@ This is the rule that matters most. Treat any change that loosens it as a judgme
   - `TSQL` uses the same tone for transmit and receive, so `cToneFreq` equals `rToneFreq`.
   - Blank means no tone.
   - In every mode except `TSQL`, `cToneFreq` stays at CHIRP's default of 88.5.
-- `Power` is `4.0W`, which is high power in CHIRP's UV-5R driver. The test currently requires it on every row.
+- `Power` is `4.0W` (high in CHIRP's UV-5R driver) on every row, except `1.0W` (low) on repeaters within `LOW_POWER_MILES` (4) of downtown, to stretch the battery in an outage. `refresh.py` sets that by distance, and the test only allows low power on repeater rows. Simplex and emergency GMRS stay high.
 - `Comment` holds the RepeaterBook location, plus any non-FM modes in parentheses. For emergency or receive-only rows, say why.
 
 ## Channel order

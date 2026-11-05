@@ -93,6 +93,8 @@ The CHIRP app doesn't read `radio-settings.json`; set those by hand or with `pro
 
 ### Settings worth knowing
 
+- **Scan covers voice, not data.** Simplex (2M CALL, 70CM CA, SIMP 55/58) and SKYWARN are in scan, since that's where traffic goes when repeaters fail. The packet channels (APRS, KM4DC, NV4FM) are skipped because their data bursts would keep stalling the scan, and SKYWRN2 is skipped because it's the same receive frequency as SKYWARN.
+- **Nearby repeaters are on low power (1 W)**: the 7 within 4 miles of downtown (slots 0–3 and 7–9). That stretches the battery in an outage. If one doesn't answer, a short press of `#` switches to high. Everything else, including simplex and emergency GMRS, is high (4 W).
 - **Alarm Mode is `Site`.** On the UV-5R, *Tone* and *Code* **transmit** an alarm on whatever channel is selected when the alarm button is held. *Site* only sounds the speaker. The tests require `Site`.
 - **Scan Resume is `TO`** (resume after about 5 seconds), so a channel with a nonstop signal (data, a baby monitor, a stuck carrier) can't trap the scan. To stay on a conversation, press a key to stop scanning there. NOAA transmits nonstop, so the weather channels are skipped in scan anyway; pick them by hand.
 - **Automatic Key Lock is on**, so a bump in a bag can't change channels. PTT still works; hold `#` to unlock.
@@ -163,6 +165,12 @@ Pat 1.0.0 loads this config as-is, and the password comes from `PAT_SECURELOGINP
 - **Receive:** with Dire Wolf running, turn the radio's volume until it prints an audio level around 50 on decoded packets.
 - **Transmit:** set the "USB Audio Device" output volume in macOS Sound settings. Start low and raise it until the gateway answers.
 - If gateways miss the start of your frames, raise `TXDELAY` in [`direwolf/direwolf.conf`](direwolf/direwolf.conf).
+
+## Go-bag backup
+
+`python3 scripts/gobag.py /Volumes/STICK` copies everything needed to restore or reprogram the radios with no internet onto a USB stick, in a dated folder. That's the newest image of each radio, both channel cards, the channel lists and settings, the Dire Wolf and Pat configs, and this README. To restore a radio from any laptop with [CHIRP](https://chirpmyradio.com), open its image (**File → Open**) and choose **Radio → Upload to radio**.
+
+`program.py` backs up a radio *before* writing to it, so right after a write, the newest image is the old state. After reprogramming, run the preview once more (it writes nothing) so the image matches the radio, then rerun `gobag.py`. `--dry-run` lists what it would copy.
 
 ## Printable card
 

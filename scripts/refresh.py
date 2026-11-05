@@ -32,6 +32,10 @@ CSV_PATH = ROOT / "frequencies.csv"
 # Downtown Washington, DC. Repeaters are sorted by distance from here.
 CENTER = (38.9072, -77.0369)
 MAX_MILES = 26  # past this, a 4 W handheld rarely reaches
+# Repeaters this close to downtown get low power (1 W) to stretch the battery
+# in an outage. A short press of # switches to high when one doesn't answer.
+LOW_POWER_MILES = 4
+HIGH_POWER, LOW_POWER = "4.0W", "1.0W"  # the UV-5R driver's High and Low
 UV5R_CHANNELS = 128
 URL = (
     "https://www.repeaterbook.com/repeaters/prox_result.php"
@@ -135,7 +139,7 @@ def build(old_repeaters, keep_freqs, reps, template, room):
             "Mode": "FM",
             "TStep": "5.00",
             "Skip": "",
-            "Power": "4.0W",
+            "Power": LOW_POWER if rep["miles"] <= LOW_POWER_MILES else HIGH_POWER,
         })
         previous = old.get((freq, row["Name"]))
         row["Comment"] = previous["Comment"] if previous else comment(rep)

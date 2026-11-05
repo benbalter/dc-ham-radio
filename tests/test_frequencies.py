@@ -101,7 +101,12 @@ class FrequenciesTest(unittest.TestCase):
         for r in self.rows:
             with self.subTest(slot=r["Location"], name=r["Name"]):
                 self.assertIn(r["Duplex"], ("", "+", "-", "off"))
-                self.assertEqual(r["Power"], "4.0W")
+                # High everywhere, except low (1 W) on nearby repeaters to save
+                # battery. Simplex and emergency GMRS stay high so a call gets through.
+                if r["Duplex"] in ("+", "-"):
+                    self.assertIn(r["Power"], ("4.0W", "1.0W"))
+                else:
+                    self.assertEqual(r["Power"], "4.0W")
 
     def test_transmit_only_in_amateur_bands(self):
         # One rule covers MURS, marine, NOAA and typos: anything that can key
@@ -135,6 +140,19 @@ class FrequenciesTest(unittest.TestCase):
                 with self.subTest(name=r["Name"]):
                     want = "" if r["Name"] in ("GMRS 3", "GMRS 19", "GMRS 20") else "S"
                     self.assertEqual(r["Skip"], want)
+
+    def test_scan_keeps_voice_simplex_skips_packet(self):
+        # When repeaters fail, traffic moves to simplex and SKYWARN, so those
+        # stay in scan. Packet channels burst data every few seconds, which
+        # would stall a scan on noise; tune them on purpose. SKYWRN2 is
+        # SKYWARN's receive frequency again, so scanning it doubles the stop.
+        skip = {r["Name"]: r["Skip"] for r in self.rows}
+        for name in ("2M CALL", "70CM CA", "SIMP 55", "SIMP 58", "SKYWARN"):
+            with self.subTest(name=name):
+                self.assertEqual(skip[name], "")
+        for name in ("APRS", "KM4DC", "NV4FM", "SKYWRN2"):
+            with self.subTest(name=name):
+                self.assertEqual(skip[name], "S")
 
     def test_national_calling_present(self):
         simplex = {r["Frequency"] for r in self.rows if r["Duplex"] == ""}

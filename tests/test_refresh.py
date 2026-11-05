@@ -66,6 +66,20 @@ class RefreshTest(unittest.TestCase):
         self.assertEqual(len(auy), 1)
         self.assertEqual(auy[0]["Comment"], "Silver Spring")
 
+    def test_power_by_distance(self):
+        power = {r["Name"]: r["Power"] for r in self.build()}
+        # W3DCA is 0.5 mi out, N3AUY exactly 4.0: both low at the default cutoff.
+        self.assertEqual(power["W3DCA W"], refresh.LOW_POWER)
+        self.assertEqual(power["N3AUY S"], refresh.LOW_POWER)
+        original = refresh.LOW_POWER_MILES
+        try:
+            refresh.LOW_POWER_MILES = 1.5
+            power = {r["Name"]: r["Power"] for r in self.build()}
+        finally:
+            refresh.LOW_POWER_MILES = original
+        self.assertEqual(power["W3DCA W"], refresh.LOW_POWER)
+        self.assertEqual(power["N0AAA S"], refresh.HIGH_POWER)
+
     def test_tones(self):
         rows = {r["Name"]: r for r in self.build()}
         self.assertEqual((rows["W3DCA W"]["Tone"], rows["W3DCA W"]["rToneFreq"]), ("Tone", "100.0"))
