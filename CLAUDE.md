@@ -76,7 +76,7 @@ This is the rule that matters most. Treat any change that loosens it as a judgme
   - `TSQL` uses the same tone for transmit and receive, so `cToneFreq` equals `rToneFreq`.
   - Blank means no tone.
   - In every mode except `TSQL`, `cToneFreq` stays at CHIRP's default of 88.5.
-- `Power` is `4.0W`, which is high power in CHIRP's UV-5R driver. The test currently requires it on every row.
+- `Power` is `4.0W` (high in CHIRP's UV-5R driver) on every row, except `1.0W` (low) on repeaters within `LOW_POWER_MILES` (4) of downtown, to stretch the battery in an outage. `refresh.py` sets that by distance, and the test only allows low power on repeater rows. Simplex and emergency GMRS stay high.
 - `Comment` holds the RepeaterBook location, plus any non-FM modes in parentheses. For emergency or receive-only rows, say why.
 
 ## Channel order

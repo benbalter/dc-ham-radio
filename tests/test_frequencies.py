@@ -101,7 +101,12 @@ class FrequenciesTest(unittest.TestCase):
         for r in self.rows:
             with self.subTest(slot=r["Location"], name=r["Name"]):
                 self.assertIn(r["Duplex"], ("", "+", "-", "off"))
-                self.assertEqual(r["Power"], "4.0W")
+                # High everywhere, except low (1 W) on nearby repeaters to save
+                # battery. Simplex and emergency GMRS stay high so a call gets through.
+                if r["Duplex"] in ("+", "-"):
+                    self.assertIn(r["Power"], ("4.0W", "1.0W"))
+                else:
+                    self.assertEqual(r["Power"], "4.0W")
 
     def test_transmit_only_in_amateur_bands(self):
         # One rule covers MURS, marine, NOAA and typos: anything that can key

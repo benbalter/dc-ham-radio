@@ -93,6 +93,7 @@ The CHIRP app doesn't read `radio-settings.json`; set those by hand or with `pro
 
 ### Settings worth knowing
 
+- **Nearby repeaters are on low power (1 W)**: the 7 within 4 miles of downtown (slots 0–3 and 7–9). That stretches the battery in an outage. If one doesn't answer, a short press of `#` switches to high. Everything else, including simplex and emergency GMRS, is high (4 W).
 - **Alarm Mode is `Site`.** On the UV-5R, *Tone* and *Code* **transmit** an alarm on whatever channel is selected when the alarm button is held. *Site* only sounds the speaker. The tests require `Site`.
 - **Scan Resume is `TO`** (resume after about 5 seconds), so a channel with a nonstop signal (data, a baby monitor, a stuck carrier) can't trap the scan. To stay on a conversation, press a key to stop scanning there. NOAA transmits nonstop, so the weather channels are skipped in scan anyway; pick them by hand.
 - **Automatic Key Lock is on**, so a bump in a bag can't change channels. PTT still works; hold `#` to unlock.
