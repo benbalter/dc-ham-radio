@@ -164,15 +164,19 @@ class ProgramTest(unittest.TestCase):
         self.assertIn("Dry run: nothing written", result.stdout)
 
     def test_settings_change_is_detected_and_applies(self):
+        # The image's squelch is whatever the radio had when it was read, so
+        # try two values: at least one of them differs from it.
         desired = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
-        squelch = desired["Basic Settings"]["squelch"]
-        squelch["value"] = 9 if squelch["value"] != 9 else 1
-        with tempfile.TemporaryDirectory() as tmp:
-            path = pathlib.Path(tmp) / "s.json"
-            radio_settings.dump(desired, path)
-            result = self.run_program("--settings", str(path))
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertIn("setting Carrier Squelch Level (squelch)", result.stdout)
+        outputs = []
+        for value in (1, 2):
+            desired["Basic Settings"]["squelch"]["value"] = value
+            with tempfile.TemporaryDirectory() as tmp:
+                path = pathlib.Path(tmp) / "s.json"
+                radio_settings.dump(desired, path)
+                result = self.run_program("--settings", str(path))
+            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+            outputs.append(result.stdout)
+        self.assertTrue(any("setting Carrier Squelch Level (squelch)" in o for o in outputs), outputs)
 
     def test_unknown_setting_is_rejected(self):
         desired = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
