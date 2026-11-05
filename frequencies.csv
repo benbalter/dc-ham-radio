@@ -81,7 +81,7 @@ Location,Name,Frequency,Duplex,Offset,Tone,rToneFreq,cToneFreq,DtcsCode,DtcsPola
 79,GMRS 2,462.587500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,12.50,,4.0W,GMRS/FRS; TX only in a life-threatening emergency (47 CFR 97.403/97.405),,,,
 80,GMRS 3,462.612500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,12.50,,4.0W,GMRS/FRS; TX only in a life-threatening emergency (47 CFR 97.403/97.405),,,,
 81,GMRS 4,462.637500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,12.50,,4.0W,GMRS/FRS; TX only in a life-threatening emergency (47 CFR 97.403/97.405),,,,
-82,GMRS 5,462.662500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,12.50,,4.0W,GMRS/FRS; TX only in a life-threatening emergency (47 CFR 97.403/97.405),,,,
+82,GMRS 5,462.662500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,12.50,S,4.0W,GMRS/FRS; TX only in a life-threatening emergency (47 CFR 97.403/97.405),,,,
 83,GMRS 6,462.687500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,12.50,,4.0W,GMRS/FRS; TX only in a life-threatening emergency (47 CFR 97.403/97.405),,,,
 84,GMRS 7,462.712500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,FM,12.50,,4.0W,GMRS/FRS; TX only in a life-threatening emergency (47 CFR 97.403/97.405),,,,
 85,GMRS 8,467.562500,,0.000000,,88.5,88.5,023,NN,023,Tone->Tone,NFM,12.50,,4.0W,GMRS/FRS; TX only in a life-threatening emergency (47 CFR 97.403/97.405),,,,
