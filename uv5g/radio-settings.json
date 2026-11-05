@@ -17,6 +17,12 @@
       "value": false
     }
   },
+  "Basic Settings": {
+    "mdfb": {
+      "label": "Display Mode (B)",
+      "value": "Name"
+    }
+  },
   "Other Settings": {
     "poweron_msg.line1": {
       "label": "Power-On Message 1",

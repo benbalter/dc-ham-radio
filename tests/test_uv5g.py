@@ -141,6 +141,8 @@ class UV5GSettingsTest(unittest.TestCase):
         self.assertIs(self.flat["bcl"], True)
         self.assertIs(self.flat["reset"], False)
         self.assertIs(self.flat["menu"], False)
+        # Channel names, not frequencies, on both lines.
+        self.assertEqual((self.flat["mdfa"], self.flat["mdfb"]), ("Name", "Name"))
 
     def test_alarm_never_transmits(self):
         self.assertEqual(self.flat["almod"], "Site")
