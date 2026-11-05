@@ -56,7 +56,7 @@ Repeaters are limited to 2m and 70cm because the UV-5R only receives 136–174 a
 
 - **Why:** the UV-5R isn't certified for the GMRS/FRS service ([47 CFR 95.335](https://www.ecfr.gov/current/title-47/part-95/section-95.335)), and holding a GMRS license doesn't change that.
 - **The commonly cited defense:** [97.403](https://www.ecfr.gov/current/title-47/part-97/section-97.403) says no rule prevents an amateur station from using "any means of radiocommunication at its disposal" for the immediate safety of human life when normal communication systems aren't available, and [97.405](https://www.ecfr.gov/current/title-47/part-97/section-97.405) covers a station in distress. Neither explicitly authorizes an uncertified Part 95 transmission. Treat it as a defense for a real emergency, not a permission.
-- **What's programmed:** GMRS/FRS 1–22 (channels 78–99) can transmit and are marked `EMG` on the printed card. GMRS 1 and 5 are skipped in scan: FRS walkie-talkies and baby monitors often sit on them, and with Scan Resume on carrier, a nonstop signal there parks the scan. Every one has a comment saying it's emergency-only, and the tests fail if one doesn't. GMRS 20 and 16 send PL 141.3.
+- **What's programmed:** GMRS/FRS 1–22 (channels 78–99) can transmit and are marked `EMG` on the printed card. GMRS 1 and 5 are skipped in scan: FRS walkie-talkies and baby monitors often sit on them, so a scan would keep pausing there. Every one has a comment saying it's emergency-only, and the tests fail if one doesn't. GMRS 20 and 16 send PL 141.3.
 - **If you have to use them:**
   - Use the lowest power that works. They're programmed at high power (4 W) so a call can get through; on most UV-5R firmware a short press of `#` switches to low (1 W).
   - FRS/GMRS 8–14 are normally capped at 0.5 W ([95.1767](https://www.ecfr.gov/current/title-47/part-95/section-95.1767)), so reach for GMRS 19 (where the family radios sit), 20, or 16 first.
@@ -94,7 +94,7 @@ The CHIRP app doesn't read `radio-settings.json`; set those by hand or with `pro
 ### Settings worth knowing
 
 - **Alarm Mode is `Site`.** On the UV-5R, *Tone* and *Code* **transmit** an alarm on whatever channel is selected when the alarm button is held. *Site* only sounds the speaker. The tests require `Site`.
-- **Scan Resume is `CO`** (resume when the signal drops), so a scan follows whole exchanges. NOAA transmits nonstop, so the weather channels are skipped in scan; pick them by hand.
+- **Scan Resume is `TO`** (resume after about 5 seconds), so a channel with a nonstop signal (data, a baby monitor, a stuck carrier) can't trap the scan. To stay on a conversation, press a key to stop scanning there. NOAA transmits nonstop, so the weather channels are skipped in scan anyway; pick them by hand.
 - **Automatic Key Lock is on**, so a bump in a bag can't change channels. PTT still works; hold `#` to unlock.
 - **Startup:** channel mode, with line A on ch 1 and line B on ch 96 (GMRS 19, the UV-5Gs' family channel), watched together with dual watch. B only listens; transmitting there from the UV-5R is still emergency-only.
 

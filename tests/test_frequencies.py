@@ -120,7 +120,7 @@ class FrequenciesTest(unittest.TestCase):
                 self.assertTrue(in_bands(round(tx, 6), TX_BANDS, top_inclusive=False))
 
     def test_weather_skipped_in_scan(self):
-        # NOAA transmits nonstop, so with Scan Resume "CO" a scan would
+        # NOAA transmits nonstop, so a scan would pause or, with Scan Resume "CO",
         # park on it forever. Weather channels are picked by hand.
         for r in self.rows:
             if 162.4 <= float(r["Frequency"]) <= 162.55:

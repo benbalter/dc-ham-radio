@@ -38,7 +38,7 @@
     },
     "screv": {
       "label": "Scan Resume",
-      "value": "CO"
+      "value": "TO"
     },
     "ste": {
       "label": "Squelch Tail Eliminate (HT to HT)",
