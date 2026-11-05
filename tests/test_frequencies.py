@@ -133,7 +133,7 @@ class FrequenciesTest(unittest.TestCase):
         for r in self.rows:
             if r["Name"].startswith("GMRS "):
                 with self.subTest(name=r["Name"]):
-                    want = "" if r["Name"] in ("GMRS 19", "GMRS 20") else "S"
+                    want = "" if r["Name"] in ("GMRS 3", "GMRS 19", "GMRS 20") else "S"
                     self.assertEqual(r["Skip"], want)
 
     def test_national_calling_present(self):
