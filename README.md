@@ -166,6 +166,12 @@ Pat 1.0.0 loads this config as-is, and the password comes from `PAT_SECURELOGINP
 - **Transmit:** set the "USB Audio Device" output volume in macOS Sound settings. Start low and raise it until the gateway answers.
 - If gateways miss the start of your frames, raise `TXDELAY` in [`direwolf/direwolf.conf`](direwolf/direwolf.conf).
 
+## Go-bag backup
+
+`python3 scripts/gobag.py /Volumes/STICK` copies everything needed to restore or reprogram the radios with no internet onto a USB stick, in a dated folder. That's the newest image of each radio, both channel cards, the channel lists and settings, the Dire Wolf and Pat configs, and this README. To restore a radio from any laptop with [CHIRP](https://chirpmyradio.com), open its image (**File → Open**) and choose **Radio → Upload to radio**.
+
+`program.py` backs up a radio *before* writing to it, so right after a write, the newest image is the old state. After reprogramming, run the preview once more (it writes nothing) so the image matches the radio, then rerun `gobag.py`. `--dry-run` lists what it would copy.
+
 ## Printable card
 
 `python3 scripts/card.py` writes `out/card.html`: a sticker for the back of the battery with the channels you'd reach for first, and a full channel sheet.
